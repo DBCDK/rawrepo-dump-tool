@@ -19,19 +19,20 @@ public class Cli {
                         "Support output in multiple formats and encodings.");
 
         parser.addArgument("-a", "--agencies")
-                .help("List of agencies to dump, separated by comma.\n" +
-                        "E.g. 870970,870971,870979")
+                .required(true)
+                .help("List of agencies to dump.\n" +
+                        "E.g. -a 870970 870971 870979")
                 .nargs("+").metavar("AGENCY_ID");
 
         parser.addArgument("-s", "--status")
-                .choices("ACTIVE", "ADD", "DELETED")
+                .choices(RecordDumpServiceConnector.Params.RecordStatus.list())
                 .setDefault("ACTIVE")
                 .help("Status of the records to dump.\n" +
                         "ACTIVE = active records only, ALL = both active and deleted records, DELETED = only deleted records.\n" +
                         "Defaults to ACTIVE");
 
         parser.addArgument("-f", "--format")
-                .choices("LINE", "JSON", "XML")
+                .choices(RecordDumpServiceConnector.Params.OutputFormat.list())
                 .setDefault("LINE")
                 .help("Output format.\n" +
                         "Defaults to LINE");
@@ -43,10 +44,11 @@ public class Cli {
                         "Defaults to UTF-8.");
 
         parser.addArgument("-t", "--type")
-                .choices("LOCAL", "ENRICHMENT", "HOLDINGS")
+                .choices(RecordDumpServiceConnector.Params.RecordType.list())
                 .help("(Only relevant for FBS agencies) List of record type of FBS records.\n" +
                         "LOCAL = local records owned by the agency, ENRICHMENT = enrichments for the agency, HOLDINGS = records which the agency has holdings on.\n" +
-                        "Mandatory when dumping FBS agency, otherwise ignored");
+                        "Mandatory when dumping FBS agency, otherwise ignored")
+                .nargs("+").metavar("TYPE");
 
         parser.addArgument("-cf", "--created-from")
                 .help("Earliest creation date (optional). Format is either 'YYYY-MM-DD' or 'YYYY-MM-DD HH:mm:ss'.\n" +
@@ -65,8 +67,17 @@ public class Cli {
                         "E.g. 2019-03-06 10:12:42");
 
         parser.addArgument("-u", "--url")
-                .help("The URL of the record service.\n"+
-                "E.g. http://rawrepo-record-service.cloud.svc.dbc.dk");
+                .required(true)
+                .help("The URL of the record service.\n" +
+                        "E.g. http://rawrepo-record-service.datawell.cloud.svc.dbc.dk");
+
+        parser.addArgument("-o", "--file")
+                .required(true)
+                .help("The name which the dump should be written to \n" +
+                        "E.g. 870970.lin");
+
+        parser.addArgument("--dryrun")
+                .help("Dryrun is used for getting the amount of records that will be exported on a normal run.");
 
         try {
             this.args = parser.parseArgs(args);
