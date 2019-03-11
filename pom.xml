@@ -23,6 +23,8 @@
         <maven-compiler-plugin.version>3.7.0</maven-compiler-plugin.version>
         <maven.surefire.version>2.19</maven.surefire.version>
         <slf4j.version>1.7.25</slf4j.version>
+        <javaee.api.version>7.0</javaee.api.version>
+        <jersey.version>2.22.2</jersey.version>
     </properties>
 
     <distributionManagement>
@@ -60,6 +62,27 @@
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-nop</artifactId>
             <version>${slf4j.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>dk.dbc</groupId>
+            <artifactId>rawrepo-record-service-connector</artifactId>
+            <version>1.1-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>javax</groupId>
+            <artifactId>javaee-api</artifactId>
+            <version>${javaee.api.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.jersey.core</groupId>
+            <artifactId>jersey-client</artifactId>
+            <version>${jersey.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.jersey.media</groupId>
+            <artifactId>jersey-media-json-jackson</artifactId>
+            <version>${jersey.version}</version>
         </dependency>
     </dependencies>
 
