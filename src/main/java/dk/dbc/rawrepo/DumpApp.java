@@ -7,14 +7,9 @@ package dk.dbc.rawrepo;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -102,7 +97,7 @@ public class DumpApp {
     }
 
     public static void handleDump(RecordDumpServiceConnector.Params params, String url, String fileName) {
-        RecordDumpServiceConnector connector = DumpFactory.create(url);
+        RecordDumpServiceConnector connector = RecordDumpServiceConnectorFactory.create(url);
         try {
             InputStream inputStream = connector.dumpAgencies(params);
             File file = new File(fileName);
@@ -112,20 +107,20 @@ public class DumpApp {
                     StandardCopyOption.REPLACE_EXISTING);
 
             inputStream.close();
-        } catch (RecordServiceConnectorException | IOException e) {
+        } catch (RecordDumpServiceConnectorException | IOException e) {
             e.printStackTrace();
         }
     }
 
     public static void handleDryRun(RecordDumpServiceConnector.Params params, String url) {
-        RecordDumpServiceConnector connector = DumpFactory.create(url);
+        RecordDumpServiceConnector connector = RecordDumpServiceConnectorFactory.create(url);
         try {
             InputStream inputStream = connector.dumpAgenciesDryRun(params);
             String result = new BufferedReader(new InputStreamReader(inputStream))
                     .lines().collect(Collectors.joining("\n"));
 
             System.out.println(result);
-        } catch (RecordServiceConnectorException e) {
+        } catch (RecordDumpServiceConnectorException e) {
             e.printStackTrace();
         }
     }
