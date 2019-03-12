@@ -40,7 +40,7 @@ public class Cli {
         parser.addArgument("-e", "--encoding")
                 .setDefault("UTF-8")
                 .help("Output character set.\n" +
-                        "eg. LATIN-1, DANMARC2, MARC-8, UTF-8, and more.\n" +
+                        "eg. LATIN-1, UTF-8, and more.\n" +
                         "Defaults to UTF-8.");
 
         parser.addArgument("-t", "--type")
