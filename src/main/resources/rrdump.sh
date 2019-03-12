@@ -6,7 +6,7 @@
 
 rrdump_home="$HOME/.rrdump"
 rrdump_archive="${rrdump_home}/archive"
-rrdump_bin="${rrdumpv_home}/bin"
+rrdump_bin="${rrdump_home}/bin"
 rrdump_url=http://mavenrepo.dbc.dk/content/repositories/releases/dk/dbc/rawrepo-dump-tool
 
 function get_current_version {
@@ -76,8 +76,8 @@ function install {
         if [ $? -eq 0 ]; then
             [ -e ${rrdump_archive}/rrdump-current.jar ] && rm ${rrdump_archive}/rrdump-current.jar
             ln -s ${rrdump_archive}/rrdump-${latest_version}.jar ${rrdump_archive}/rrdump-current.jar
-            unzip -o ${rrdump_archive}/rrdump-current.jar rrdump -d ${rrdump_bin}
-            chmod a+x ${rrdump_bin}/rrdump
+            unzip -o ${rrdump_archive}/rrdump-current.jar rrdump.sh -d ${rrdump_bin}
+            chmod a+x ${rrdump_bin}/rrdump.sh
             echo ${latest_version} > ${rrdump_home}/version
         fi
 
@@ -85,8 +85,8 @@ function install {
             touch ~/.bash_aliases
         fi
 
-        grep "rrdump=~/.rrdump/bin/rrdump" ~/.bash_aliases ||
-            echo -e "\nalias rrdump=~/.rrdump/bin/rrdump" >> ~/.bash_aliases ; . ~/.bash_aliases
+        grep "rrdump=~/.rrdump/bin/rrdump.sh" ~/.bash_aliases ||
+            echo -e "\nalias rrdump=~/.rrdump/bin/rrdump.sh" >> ~/.bash_aliases ; . ~/.bash_aliases
     else
         echo "Already at latest version ${latest_version}"
     fi
