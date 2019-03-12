@@ -59,7 +59,7 @@ optional arguments:
 Examples
 
 ```bash
-rrdump -a 710100 -e UTF-8 -f LINE -t HOLDINGS -u  http://rawrepo-record-service.fbstest.svc.cloud.dbc.dk  -o 710100_holdings.lin
+rrdump -a 710100 -e UTF-8 -f LINE -t HOLDINGS -u  http://rawrepo-record-service.fbstest.svc.cloud.dbc.dk -o 710100_holdings.lin
 ```
 ```bash
 rrdump -a 870970 http://rawrepo-record-service.fbstest.svc.cloud.dbc.dk 870970.lin
