@@ -62,10 +62,10 @@ Examples
 rrdump -a 710100 -e UTF-8 -f LINE -t HOLDINGS -u  http://rawrepo-record-service.fbstest.svc.cloud.dbc.dk -o 710100_holdings.lin
 ```
 ```bash
-rrdump -a 870970 http://rawrepo-record-service.fbstest.svc.cloud.dbc.dk 870970.lin
+rrdump -a 870970 -u http://rawrepo-record-service.fbstest.svc.cloud.dbc.dk -o 870970.lin
 ```
 ```bash
-rrdump -a 870979 -f JSON http://rawrepo-record-service.fbstest.svc.cloud.dbc.dk 870979.json
+rrdump -a 870979 -f JSON -u http://rawrepo-record-service.fbstest.svc.cloud.dbc.dk -o 870979.json
 ```
 
 ## Known limitations
