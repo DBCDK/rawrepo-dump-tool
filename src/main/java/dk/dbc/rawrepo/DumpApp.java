@@ -38,10 +38,10 @@ public class DumpApp {
         String outputFormat = cli.args.get("format");
         String outputEncoding = cli.args.get("encoding");
 
-        String createdFrom = cli.args.get("created-from");
-        String createdTo = cli.args.get("created-to");
-        String modifiedFrom = cli.args.get("modified-from");
-        String modifiedTo = cli.args.get("modified-to");
+        String createdFrom = cli.args.get("created_from");
+        String createdTo = cli.args.get("created_to");
+        String modifiedFrom = cli.args.get("modified_from");
+        String modifiedTo = cli.args.get("modified_to");
 
         String fileName = cli.args.get("file");
         String url = cli.args.get("url");
