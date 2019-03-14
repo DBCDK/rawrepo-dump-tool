@@ -4,8 +4,8 @@ Rawrepo dump tool is a command line tool for dumping all records for one or more
 ## Installation
 ```bash
 $ curl -sL http://mavenrepo.dbc.dk/content/repositories/releases/dk/dbc/rawrepo-dump-tool/1.0.0/rawrepo-dump-tool-1.0.0.jar -o rrdump.jar && unzip -op rrdump.jar rrdump.sh | bash -s -- --install
+$ source ~/.bashrc
 ```
-
 Keep the installation up-to-date using the selfupdate action
 ```bash
 rrdump --selfupdate
