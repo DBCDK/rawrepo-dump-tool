@@ -90,7 +90,7 @@ public class DumpApp {
             }
         }
 
-        if (!dryrun) {
+        if (dryrun) {
             System.out.println("Getting record count...");
             handleDryRun(params, url);
             System.out.println("Done!");
