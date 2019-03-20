@@ -111,8 +111,9 @@ public class DumpApp {
                     StandardCopyOption.REPLACE_EXISTING);
 
             inputStream.close();
-        } catch (RecordDumpServiceConnectorException | IOException e) {
-            e.printStackTrace();
+        } catch (RecordDumpServiceConnectorException | IOException ex) {
+            System.out.println("Unexpected error!");
+            System.out.println(ex.getMessage());
         }
     }
 
@@ -124,8 +125,14 @@ public class DumpApp {
                     .lines().collect(Collectors.joining("\n"));
 
             System.out.println(result);
-        } catch (RecordDumpServiceConnectorException e) {
-            e.printStackTrace();
+        } catch (RecordDumpServiceConnectorUnexpectedStatusCodeValidationException ex ) {
+            System.out.println("Validation error!");
+            for (ParamsValidationItem paramsValidationItem : ex.getParamsValidation().getErrors()) {
+                System.out.println(String.format("Field %s: %s", paramsValidationItem.getFieldName(), paramsValidationItem.getMessage()));
+            }
+        } catch (RecordDumpServiceConnectorException ex) {
+            System.out.println("Unexpected error!");
+            System.out.println(ex.getMessage());
         }
     }
 
