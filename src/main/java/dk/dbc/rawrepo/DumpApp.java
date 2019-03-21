@@ -90,50 +90,47 @@ public class DumpApp {
             }
         }
 
-        if (dryrun) {
+        try {
+            dump(params, url, file, dryrun);
+        } catch (RuntimeException ex) {
+            System.out.println("Caught exception - operation aborted");
+        }
+    }
+
+    public static void dump(RecordDumpServiceConnector.Params params, String url, File file, boolean dryrun) {
+        RecordDumpServiceConnector connector = RecordDumpServiceConnectorFactory.create(url);
+
+        try {
             System.out.println("Getting record count...");
-            handleDryRun(params, url);
-            System.out.println("Done!");
-        } else {
-            System.out.println("Exporting records...");
-            handleDump(params, url, file);
-            System.out.println("Done!");
-        }
-    }
-
-    public static void handleDump(RecordDumpServiceConnector.Params params, String url, File file) {
-        RecordDumpServiceConnector connector = RecordDumpServiceConnectorFactory.create(url);
-        try {
-            InputStream inputStream = connector.dumpAgencies(params);
-            java.nio.file.Files.copy(
-                    inputStream,
-                    file.toPath(),
-                    StandardCopyOption.REPLACE_EXISTING);
-
-            inputStream.close();
-        } catch (RecordDumpServiceConnectorException | IOException ex) {
-            System.out.println("Unexpected error!");
-            System.out.println(ex.getMessage());
-        }
-    }
-
-    public static void handleDryRun(RecordDumpServiceConnector.Params params, String url) {
-        RecordDumpServiceConnector connector = RecordDumpServiceConnectorFactory.create(url);
-        try {
             InputStream inputStream = connector.dumpAgenciesDryRun(params);
             String result = new BufferedReader(new InputStreamReader(inputStream))
                     .lines().collect(Collectors.joining("\n"));
-
             System.out.println(result);
-        } catch (RecordDumpServiceConnectorUnexpectedStatusCodeValidationException ex ) {
+
+            if (!dryrun) {
+                System.out.println("Exporting records...");
+                inputStream = connector.dumpAgencies(params);
+                java.nio.file.Files.copy(
+                        inputStream,
+                        file.toPath(),
+                        StandardCopyOption.REPLACE_EXISTING);
+
+                inputStream.close();
+            }
+
+            System.out.println("Done");
+        } catch (RecordDumpServiceConnectorUnexpectedStatusCodeValidationException ex) {
             System.out.println("Validation error!");
             for (ParamsValidationItem paramsValidationItem : ex.getParamsValidation().getErrors()) {
                 System.out.println(String.format("Field %s: %s", paramsValidationItem.getFieldName(), paramsValidationItem.getMessage()));
             }
-        } catch (RecordDumpServiceConnectorException ex) {
+            throw new RuntimeException("Validation failed!");
+        } catch (RecordDumpServiceConnectorException | IOException ex) {
             System.out.println("Unexpected error!");
             System.out.println(ex.getMessage());
+            throw new RuntimeException("Unexpected error");
         }
     }
+
 
 }
