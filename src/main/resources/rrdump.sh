@@ -96,9 +96,9 @@ function selfupdate {
     local current_version=`get_current_version`
     local latest_version=`get_latest_version`
     if [ "$current_version" != "$latest_version" ]; then
-        curl -sL ${rrdump_url}/${latest_version}/rrdump-${latest_version}.jar -o /tmp/rrdump-${latest_version}.jar
-        unzip -qo /tmp/rrdump-${latest_version}.jar rrdump -d /tmp
-        bash /tmp/rrdump --install
+        curl -sL ${rrdump_url}/${latest_version}/rawrepo-dump-tool-${latest_version}.jar -o /tmp/rrdump-${latest_version}.jar
+        unzip -qo /tmp/rrdump-${latest_version}.jar rrdump.sh -d /tmp
+        bash /tmp/rrdump.sh --install
     else
         echo "Already at latest version ${latest_version}"
     fi
