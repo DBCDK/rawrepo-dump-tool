@@ -6,6 +6,7 @@
 package dk.dbc.rawrepo;
 
 import net.sourceforge.argparse4j.ArgumentParsers;
+import net.sourceforge.argparse4j.impl.Arguments;
 import net.sourceforge.argparse4j.inf.ArgumentParser;
 import net.sourceforge.argparse4j.inf.ArgumentParserException;
 import net.sourceforge.argparse4j.inf.Namespace;
@@ -28,42 +29,52 @@ public class Cli {
                 .choices(RecordDumpServiceConnector.Params.RecordStatus.list())
                 .setDefault("ACTIVE")
                 .help("Status of the records to dump.\n" +
-                        "ACTIVE = active records only, ALL = both active and deleted records, DELETED = only deleted records.\n" +
+                        "ACTIVE = active records only, \n" +
+                        "ALL = both active and deleted records, \n" +
+                        "DELETED = only deleted records.\n" +
                         "Defaults to ACTIVE");
 
         parser.addArgument("-f", "--format")
                 .choices(RecordDumpServiceConnector.Params.OutputFormat.list())
                 .setDefault("LINE")
                 .help("Output format.\n" +
-                        "Defaults to LINE");
+                        "Defaults to LINE. \n" +
+                        "XML outputs a marcxchange collection");
 
         parser.addArgument("-e", "--encoding")
                 .setDefault("UTF-8")
                 .help("Output character set.\n" +
-                        "eg. LATIN-1, UTF-8, and more.\n" +
+                        "eg. LATIN1, UTF-8, and more.\n" +
                         "Defaults to UTF-8.");
 
         parser.addArgument("-t", "--type")
                 .choices(RecordDumpServiceConnector.Params.RecordType.list())
                 .help("(Only relevant for FBS agencies) List of record type of FBS records.\n" +
-                        "LOCAL = local records owned by the agency, ENRICHMENT = enrichments for the agency, HOLDINGS = records which the agency has holdings on.\n" +
-                        "Mandatory when dumping FBS agency, otherwise ignored")
+                        "LOCAL = local records owned by the agency, \n" +
+                        "ENRICHMENT = enrichments for the agency, \n" +
+                        "HOLDINGS = records which the agency has holdings on.\n" +
+                        "Mandatory when dumping FBS agency, otherwise ignored. \n" +
+                        "Note: It might not be possible to dump both rawrepo and holdings for a FBS agency in the same operation due to a known error in the rawrepo-record-service.")
                 .nargs("+").metavar("TYPE");
 
         parser.addArgument("-cf", "--created-from")
-                .help("Earliest creation date (optional). Format is either 'YYYY-MM-DD' or 'YYYY-MM-DD HH:mm:ss'.\n" +
+                .help("Earliest database creation date (optional). \n" +
+                        "Format is either 'YYYY-MM-DD' or 'YYYY-MM-DD HH:mm:ss'.\n" +
                         "E.g. 2019-03-06 10:12:42");
 
         parser.addArgument("-ct", "--created-to")
-                .help("Lastest creation date (optional). Format is either 'YYYY-MM-DD' or 'YYYY-MM-DD HH:mm:ss'.\n" +
+                .help("Latest database creation date (optional). \n" +
+                        "Format is either 'YYYY-MM-DD' or 'YYYY-MM-DD HH:mm:ss'.\n" +
                         "E.g. 2019-03-06 10:12:42");
 
         parser.addArgument("-mf", "--modified-from")
-                .help("Earliest modification date (optional). Format is either 'YYYY-MM-DD' or 'YYYY-MM-DD HH:mm:ss'.\n" +
+                .help("Earliest database modification date (optional). \n" +
+                        "Format is either 'YYYY-MM-DD' or 'YYYY-MM-DD HH:mm:ss'.\n" +
                         "E.g. 2019-03-06 10:12:42");
 
         parser.addArgument("-mt", "--modified-to")
-                .help("Lastest modification date (optional). Format is either 'YYYY-MM-DD' or 'YYYY-MM-DD HH:mm:ss'.\n" +
+                .help("Latest database modification date (optional). \n" +
+                        "Format is either 'YYYY-MM-DD' or 'YYYY-MM-DD HH:mm:ss'.\n" +
                         "E.g. 2019-03-06 10:12:42");
 
         parser.addArgument("-u", "--url")
@@ -73,10 +84,14 @@ public class Cli {
 
         parser.addArgument("-o", "--file")
                 .required(true)
+                .type(Arguments.fileType())
                 .help("The name which the dump should be written to \n" +
                         "E.g. 870970.lin");
 
         parser.addArgument("--dryrun")
+                .type(Boolean.class)
+                .nargs("?")
+                .setConst(true)
                 .help("Dryrun is used for getting the amount of records that will be exported on a normal run.");
 
         try {

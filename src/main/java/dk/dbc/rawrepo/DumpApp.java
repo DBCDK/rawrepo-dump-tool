@@ -31,20 +31,22 @@ public class DumpApp {
     static void runWith(String[] args) throws CliException {
         final Cli cli = new Cli(args);
 
-        List<Integer> agencies = cli.args.get("agencies");
+        List<Integer> agencies = cli.args.getList("agencies");
         String recordStatus = cli.args.get("status");
         List<String> recordTypes = cli.args.get("type");
 
         String outputFormat = cli.args.get("format");
         String outputEncoding = cli.args.get("encoding");
 
-        String createdFrom = cli.args.get("created-from");
-        String createdTo = cli.args.get("created-to");
-        String modifiedFrom = cli.args.get("modified-from");
-        String modifiedTo = cli.args.get("modified-to");
+        String createdFrom = cli.args.get("created_from");
+        String createdTo = cli.args.get("created_to");
+        String modifiedFrom = cli.args.get("modified_from");
+        String modifiedTo = cli.args.get("modified_to");
 
-        String fileName = cli.args.get("file");
+        File file = cli.args.get("file");
         String url = cli.args.get("url");
+
+        boolean dryrun = cli.args.get("dryrun") != null ? cli.args.get("dryrun") : false;
 
         RecordDumpServiceConnector.Params params = new RecordDumpServiceConnector.Params()
                 .withAgencies(agencies);
@@ -80,49 +82,55 @@ public class DumpApp {
         }
 
         if (outputEncoding != null) {
-            params.withOutputEncoding(outputEncoding);
+            if ("LATIN-1".equalsIgnoreCase(outputEncoding)) {
+                // Small hack as 'LATIN-1' is not accepted by java
+                params.withOutputEncoding("LATIN1");
+            } else {
+                params.withOutputEncoding(outputEncoding);
+            }
         }
 
-        System.out.println(params);
+        try {
+            dump(params, url, file, dryrun);
+        } catch (RuntimeException ex) {
+            System.out.println("Caught exception - operation aborted");
+        }
+    }
 
-        if (cli.args.get("dryrun") != null) {
+    public static void dump(RecordDumpServiceConnector.Params params, String url, File file, boolean dryrun) {
+        RecordDumpServiceConnector connector = RecordDumpServiceConnectorFactory.create(url);
+
+        try {
             System.out.println("Getting record count...");
-            handleDryRun(params, url);
-            System.out.println("Done!");
-        } else {
-            System.out.println("Exporting records...");
-            handleDump(params, url, fileName);
-            System.out.println("Done!");
-        }
-    }
-
-    public static void handleDump(RecordDumpServiceConnector.Params params, String url, String fileName) {
-        RecordDumpServiceConnector connector = RecordDumpServiceConnectorFactory.create(url);
-        try {
-            InputStream inputStream = connector.dumpAgencies(params);
-            File file = new File(fileName);
-            java.nio.file.Files.copy(
-                    inputStream,
-                    file.toPath(),
-                    StandardCopyOption.REPLACE_EXISTING);
-
-            inputStream.close();
-        } catch (RecordDumpServiceConnectorException | IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public static void handleDryRun(RecordDumpServiceConnector.Params params, String url) {
-        RecordDumpServiceConnector connector = RecordDumpServiceConnectorFactory.create(url);
-        try {
             InputStream inputStream = connector.dumpAgenciesDryRun(params);
             String result = new BufferedReader(new InputStreamReader(inputStream))
                     .lines().collect(Collectors.joining("\n"));
-
             System.out.println(result);
-        } catch (RecordDumpServiceConnectorException e) {
-            e.printStackTrace();
+
+            if (!dryrun) {
+                System.out.println("Exporting records...");
+                inputStream = connector.dumpAgencies(params);
+                java.nio.file.Files.copy(
+                        inputStream,
+                        file.toPath(),
+                        StandardCopyOption.REPLACE_EXISTING);
+
+                inputStream.close();
+            }
+
+            System.out.println("Done");
+        } catch (RecordDumpServiceConnectorUnexpectedStatusCodeValidationException ex) {
+            System.out.println("Validation error!");
+            for (ParamsValidationItem paramsValidationItem : ex.getParamsValidation().getErrors()) {
+                System.out.println(String.format("Field %s: %s", paramsValidationItem.getFieldName(), paramsValidationItem.getMessage()));
+            }
+            throw new RuntimeException("Validation failed!");
+        } catch (RecordDumpServiceConnectorException | IOException ex) {
+            System.out.println("Unexpected error!");
+            System.out.println(ex.getMessage());
+            throw new RuntimeException("Unexpected error");
         }
     }
+
 
 }
