@@ -3,7 +3,7 @@ Rawrepo dump tool is a command line tool for dumping all records for one or more
 
 ## Installation
 ```bash
-$ curl -sL http://mavenrepo.dbc.dk/content/repositories/releases/dk/dbc/rawrepo-dump-tool/1.0.0/rawrepo-dump-tool-1.0.0.jar -o rrdump.jar && unzip -op rrdump.jar rrdump.sh | bash -s -- --install
+$ curl -sL http://mavenrepo.dbc.dk/content/repositories/releases/dk/dbc/rawrepo-dump-tool/1.0.1/rawrepo-dump-tool-1.0.1.jar -o rrdump.jar && unzip -op rrdump.jar rrdump.sh | bash -s -- --install
 $ source ~/.bashrc # Or log out and into a new session
 ```
 
@@ -14,7 +14,7 @@ rrdump --selfupdate
 
 ## Usage
 ````bash
-usage: rawrepo-dump-tool [-h] -a AGENCY_ID [AGENCY_ID ...] [-s {ACTIVE,ALL,DELETED}] [-f {LINE,XML,JSON,ISO,LINE_XML}] [-e ENCODING] [-t TYPE [TYPE ...]] [-cf CREATED_FROM] [-ct CREATED_TO] [-mf MODIFIED_FROM] [-mt MODIFIED_TO] -u URL -o FILE [--dryrun [{true,false}]]
+usage: rrdump [-h] -a AGENCY_ID [AGENCY_ID ...] [-s {ACTIVE,ALL,DELETED}] [-f {LINE,XML,JSON,ISO,LINE_XML}] [-e ENCODING] [-t TYPE [TYPE ...]] [-cf CREATED_FROM] [-ct CREATED_TO] [-mf MODIFIED_FROM] [-mt MODIFIED_TO] -u URL -o FILE [--dryrun [{true,false}]]
 
 Dumps one or more libraries from rawrepo.
 Support output in multiple formats and encodings.
@@ -66,7 +66,6 @@ optional arguments:
                          E.g. 870970.lin
   --dryrun [{true,false}]
                          Dryrun is used for getting the amount of records that will be exported on a normal run.
-
 ````
 Examples
 
