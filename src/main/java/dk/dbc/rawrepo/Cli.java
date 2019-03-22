@@ -15,7 +15,7 @@ public class Cli {
     Namespace args;
 
     Cli(String[] args) throws CliException {
-        final ArgumentParser parser = ArgumentParsers.newArgumentParser("rawrepo-dump-tool")
+        final ArgumentParser parser = ArgumentParsers.newArgumentParser("rrdump")
                 .description("Dumps one or more libraries from rawrepo.\n" +
                         "Support output in multiple formats and encodings.");
 
@@ -53,8 +53,7 @@ public class Cli {
                         "LOCAL = local records owned by the agency, \n" +
                         "ENRICHMENT = enrichments for the agency, \n" +
                         "HOLDINGS = records which the agency has holdings on.\n" +
-                        "Mandatory when dumping FBS agency, otherwise ignored. \n" +
-                        "Note: It might not be possible to dump both rawrepo and holdings for a FBS agency in the same operation due to a known error in the rawrepo-record-service.")
+                        "Mandatory when dumping FBS agency, otherwise ignored. ")
                 .nargs("+").metavar("TYPE");
 
         parser.addArgument("-cf", "--created-from")
