@@ -33,7 +33,8 @@ optional arguments:
   -f {LINE,XML,JSON,ISO,LINE_XML}, --format {LINE,XML,JSON,ISO,LINE_XML}
                          Output format.
                          Defaults to LINE. 
-                         XML outputs a marcxchange collection
+                         XML outputs a marcxchange collection.
+                         LINE_XML outputs a marcxchange record per line without collection.
   -e ENCODING, --encoding ENCODING
                          Output character set.
                          eg. LATIN1, UTF-8, and more.
@@ -43,6 +44,8 @@ optional arguments:
                          LOCAL = local records owned by the agency, 
                          ENRICHMENT = enrichments for the agency, 
                          HOLDINGS = records which the agency has holdings on.
+                         Note that if HOLDINGS is selected the output might include local
+                         and enrichment records if there happen to be holdings on them.
                          Mandatory when dumping FBS agency, otherwise ignored. 
   -cf CREATED_FROM, --created-from CREATED_FROM
                          Earliest database creation date (optional). 
