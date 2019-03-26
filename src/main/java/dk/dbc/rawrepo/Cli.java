@@ -39,7 +39,8 @@ public class Cli {
                 .setDefault("LINE")
                 .help("Output format.\n" +
                         "Defaults to LINE. \n" +
-                        "XML outputs a marcxchange collection");
+                        "XML outputs a marcxchange collection. \n" +
+                        "LINE_XML outputs a marcxchange record per line without collection.");
 
         parser.addArgument("-e", "--encoding")
                 .setDefault("UTF-8")
@@ -53,6 +54,8 @@ public class Cli {
                         "LOCAL = local records owned by the agency, \n" +
                         "ENRICHMENT = enrichments for the agency, \n" +
                         "HOLDINGS = records which the agency has holdings on.\n" +
+                        "Note that if HOLDINGS is selected the output might include local\n" +
+                        "and enrichment records if there happen to be holdings on them.\n" +
                         "Mandatory when dumping FBS agency, otherwise ignored. ")
                 .nargs("+").metavar("TYPE");
 
