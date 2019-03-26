@@ -99,6 +99,7 @@ function selfupdate {
         curl -sL ${rrdump_url}/${latest_version}/rawrepo-dump-tool-${latest_version}.jar -o /tmp/rrdump-${latest_version}.jar
         unzip -qo /tmp/rrdump-${latest_version}.jar rrdump.sh -d /tmp
         bash /tmp/rrdump.sh --install
+        rm /tmp/rrdump.sh # Clean up in case of multi user server.
     else
         echo "Already at latest version ${latest_version}"
     fi
