@@ -123,6 +123,11 @@ public class DumpApp {
             System.out.println("Validation error!");
             for (ParamsValidationItem paramsValidationItem : ex.getParamsValidation().getErrors()) {
                 System.out.println(String.format("Field %s: %s", paramsValidationItem.getFieldName(), paramsValidationItem.getMessage()));
+                if ("recordType".equals(paramsValidationItem.getFieldName())) {
+                    // Add extra help text if the field is recordType
+                    // Indent so indentation matches previous message
+                    System.out.println("                  Please add -t TYPE [TYPE ...], --type TYPE [TYPE ...]. See rrdump --help for more info");
+                }
             }
             throw new RuntimeException("Validation failed!");
         } catch (RecordDumpServiceConnectorException | IOException ex) {
