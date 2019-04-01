@@ -123,7 +123,7 @@ public class DumpApp {
             System.out.println("Validation error!");
             for (ParamsValidationItem paramsValidationItem : ex.getParamsValidation().getErrors()) {
                 System.out.println(String.format("Field %s: %s", paramsValidationItem.getFieldName(), paramsValidationItem.getMessage()));
-                if ("recordType".equals(paramsValidationItem.getFieldName())) {
+                if ("recordType".equals(paramsValidationItem.getFieldName()) && paramsValidationItem.getMessage().contains("The field is required")) {
                     // Add extra help text if the field is recordType
                     // Indent so indentation matches previous message
                     System.out.println("                  Please add -t TYPE [TYPE ...], --type TYPE [TYPE ...]. See rrdump --help for more info");
