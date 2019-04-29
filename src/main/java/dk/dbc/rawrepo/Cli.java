@@ -82,7 +82,7 @@ public class Cli {
         parser.addArgument("-u", "--url")
                 .required(true)
                 .help("The URL of the record service.\n" +
-                        "E.g. http://rawrepo-record-service.datawell.cloud.svc.dbc.dk");
+                        "E.g. http://rawrepo-record-service.fbstest.svc.cloud.dbc.dk");
 
         parser.addArgument("-o", "--file")
                 .required(true)
