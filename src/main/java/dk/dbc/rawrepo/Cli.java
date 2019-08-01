@@ -9,6 +9,7 @@ import net.sourceforge.argparse4j.ArgumentParsers;
 import net.sourceforge.argparse4j.impl.Arguments;
 import net.sourceforge.argparse4j.inf.ArgumentParser;
 import net.sourceforge.argparse4j.inf.ArgumentParserException;
+import net.sourceforge.argparse4j.inf.MutuallyExclusiveGroup;
 import net.sourceforge.argparse4j.inf.Namespace;
 
 public class Cli {
@@ -19,23 +20,22 @@ public class Cli {
                 .description("Dumps one or more libraries from rawrepo.\n" +
                         "Support output in multiple formats and encodings.");
 
-        parser.addArgument("-a", "--agencies")
-                .required(true)
+        MutuallyExclusiveGroup group = parser.addMutuallyExclusiveGroup().required(true);
+
+        group.addArgument("-a", "--agencies")
                 .help("List of agencies to dump.\n" +
-                        "E.g. -a 870970 870971 870979")
+                        "Note and -r and -a are mutually exclusive. Dump tool works in either record mode or agency mode \n" +
+                        "Usage example: -a 870970 870971 870979")
                 .nargs("+").metavar("AGENCY_ID");
 
-        parser.addArgument("-s", "--status")
-                .choices(RecordDumpServiceConnector.Params.RecordStatus.list())
-                .setDefault("ACTIVE")
-                .help("Status of the records to dump.\n" +
-                        "ACTIVE = active records only, \n" +
-                        "ALL = both active and deleted records, \n" +
-                        "DELETED = only deleted records.\n" +
-                        "Defaults to ACTIVE");
+        group.addArgument("-r", "--records")
+                .type(Arguments.fileType())
+                .help("Name of file containing record ids. Format is line separated bibliographicrecordid:agencyid.\n" +
+                        "Note and -r and -a are mutually exclusive. Dump tool works in either record mode or agency mode \n" +
+                        "Usage example: -r my_records.lin");
 
         parser.addArgument("-f", "--format")
-                .choices(RecordDumpServiceConnector.Params.OutputFormat.list())
+                .choices(RecordDumpServiceConnector.AgencyParams.OutputFormat.list())
                 .setDefault("LINE")
                 .help("Output format.\n" +
                         "Defaults to LINE. \n" +
@@ -48,9 +48,18 @@ public class Cli {
                         "eg. LATIN1, UTF-8, and more.\n" +
                         "Defaults to UTF-8.");
 
+        parser.addArgument("-s", "--status")
+                .choices(RecordDumpServiceConnector.AgencyParams.RecordStatus.list())
+                .setDefault("ACTIVE")
+                .help("Status of the records to dump.\n" +
+                        "ACTIVE = active records only, \n" +
+                        "ALL = both active and deleted records, \n" +
+                        "DELETED = only deleted records.\n" +
+                        "Defaults to ACTIVE");
+
         parser.addArgument("-t", "--type")
-                .choices(RecordDumpServiceConnector.Params.RecordType.list())
-                .help("(Only relevant for FBS agencies) List of record type of FBS records.\n" +
+                .choices(RecordDumpServiceConnector.AgencyParams.RecordType.list())
+                .help("(Only relevant for FBS agencies - only applicable in agency mode) List of record type of FBS records.\n" +
                         "LOCAL = local records owned by the agency, \n" +
                         "ENRICHMENT = enrichments for the agency, \n" +
                         "HOLDINGS = records which the agency has holdings on.\n" +
@@ -62,33 +71,37 @@ public class Cli {
         parser.addArgument("-cf", "--created-from")
                 .help("Earliest database creation date (optional). \n" +
                         "Format is either 'YYYY-MM-DD' or 'YYYY-MM-DD HH:mm:ss'.\n" +
-                        "E.g. 2019-03-06 10:12:42");
+                        "Only applicable in agency mode \n" +
+                        "Usage example: -cf 2019-03-06 10:12:42");
 
         parser.addArgument("-ct", "--created-to")
                 .help("Latest database creation date (optional). \n" +
                         "Format is either 'YYYY-MM-DD' or 'YYYY-MM-DD HH:mm:ss'.\n" +
-                        "E.g. 2019-03-06 10:12:42");
+                        "Only applicable in agency mode \n" +
+                        "Usage example: -ct 2019-03-06 10:12:42");
 
         parser.addArgument("-mf", "--modified-from")
                 .help("Earliest database modification date (optional). \n" +
                         "Format is either 'YYYY-MM-DD' or 'YYYY-MM-DD HH:mm:ss'.\n" +
-                        "E.g. 2019-03-06 10:12:42");
+                        "Only applicable in agency mode \n" +
+                        "Usage example: -mf 2019-03-06 10:12:42");
 
         parser.addArgument("-mt", "--modified-to")
                 .help("Latest database modification date (optional). \n" +
                         "Format is either 'YYYY-MM-DD' or 'YYYY-MM-DD HH:mm:ss'.\n" +
-                        "E.g. 2019-03-06 10:12:42");
+                        "Only applicable in agency mode \n" +
+                        "Usage example: -mt 2019-03-06 10:12:42");
 
         parser.addArgument("-u", "--url")
                 .required(true)
                 .help("The URL of the record service.\n" +
-                        "E.g. http://rawrepo-record-service.fbstest.svc.cloud.dbc.dk");
+                        "Usage example: -u http://rawrepo-record-service.fbstest.svc.cloud.dbc.dk");
 
         parser.addArgument("-o", "--file")
                 .required(true)
                 .type(Arguments.fileType())
                 .help("The name which the dump should be written to \n" +
-                        "E.g. 870970.lin");
+                        "Usage example: -o 870970.lin");
 
         parser.addArgument("--dryrun")
                 .type(Boolean.class)
