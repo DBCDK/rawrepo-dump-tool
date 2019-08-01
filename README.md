@@ -93,9 +93,15 @@ rrdump -a 870979 -f JSON -u http://rawrepo-record-service.fbstest.svc.cloud.dbc.
 ```
 
 - Records
-````bash
+```bash
 rrdump -r ids.txt -o records.txt -u http://rawrepo-record-service.fbstest.svc.cloud.dbc.dk
-````
-````bash
+```
+```bash
 rrdump -r ids.txt -f JSON -o records.json -u http://rawrepo-record-service.fbstest.svc.cloud.dbc.dk
-````
+```
+where ids.txt e.g. contains
+```bash 
+51715098:870970
+68622840:870979
+877770486:830380
+```
