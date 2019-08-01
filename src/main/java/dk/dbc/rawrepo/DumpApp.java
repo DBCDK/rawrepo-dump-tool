@@ -7,6 +7,8 @@ package dk.dbc.rawrepo;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -31,33 +33,55 @@ public class DumpApp {
     static void runWith(String[] args) throws CliException {
         final Cli cli = new Cli(args);
 
-        List<Integer> agencies = cli.args.getList("agencies");
-        String recordStatus = cli.args.get("status");
-        List<String> recordTypes = cli.args.get("type");
+        try {
+            final File outputFile = cli.args.get("file");
+            final String url = cli.args.get("url");
 
-        String outputFormat = cli.args.get("format");
-        String outputEncoding = cli.args.get("encoding");
+            if (cli.args.getList("agencies") != null) {
+                final RecordDumpServiceConnector.AgencyParams params = constructAgencyParams(cli);
+                final boolean dryrun = cli.args.get("dryrun") != null ? cli.args.get("dryrun") : false;
 
-        String createdFrom = cli.args.get("created_from");
-        String createdTo = cli.args.get("created_to");
-        String modifiedFrom = cli.args.get("modified_from");
-        String modifiedTo = cli.args.get("modified_to");
+                dump(params, url, outputFile, dryrun);
+            } else {
+                // The argparser ensures one of the arguments will always be present, so we don't need to check further
+                final RecordDumpServiceConnector.RecordParams params = constructRecordParams(cli);
+                final File recordFile = cli.args.get("records");
+                final FileInputStream fstream = new FileInputStream(recordFile);
+                final String body = new BufferedReader(new InputStreamReader(fstream)).lines().collect(Collectors.joining("\n"));
 
-        File file = cli.args.get("file");
-        String url = cli.args.get("url");
+                dump(params, url, outputFile, body);
+            }
 
-        boolean dryrun = cli.args.get("dryrun") != null ? cli.args.get("dryrun") : false;
+        } catch (RuntimeException ex) {
+            System.out.println("Caught exception - operation aborted");
+        } catch (FileNotFoundException e) {
+            System.out.println("Could not read file '" + cli.args.getString("records") + "'. Does it exist?");
+        }
+    }
 
-        RecordDumpServiceConnector.Params params = new RecordDumpServiceConnector.Params()
+    private static RecordDumpServiceConnector.AgencyParams constructAgencyParams(Cli cli) {
+        final List<Integer> agencies = cli.args.getList("agencies");
+        final String recordStatus = cli.args.get("status");
+        final List<String> recordTypes = cli.args.get("type");
+
+        final String outputFormat = cli.args.get("format");
+        final String outputEncoding = cli.args.get("encoding");
+
+        final String createdFrom = cli.args.get("created_from");
+        final String createdTo = cli.args.get("created_to");
+        final String modifiedFrom = cli.args.get("modified_from");
+        final String modifiedTo = cli.args.get("modified_to");
+
+        final RecordDumpServiceConnector.AgencyParams params = new RecordDumpServiceConnector.AgencyParams()
                 .withAgencies(agencies);
 
         if (!recordStatus.isEmpty()) {
-            params.withRecordStatus(RecordDumpServiceConnector.Params.RecordStatus.valueOf(recordStatus));
+            params.withRecordStatus(RecordDumpServiceConnector.AgencyParams.RecordStatus.valueOf(recordStatus));
         }
 
         if (recordTypes != null && !recordTypes.isEmpty()) {
             params.withRecordType(recordTypes.stream()
-                    .map(RecordDumpServiceConnector.Params.RecordType::valueOf)
+                    .map(RecordDumpServiceConnector.AgencyParams.RecordType::valueOf)
                     .collect(Collectors.toList()));
         }
 
@@ -78,7 +102,7 @@ public class DumpApp {
         }
 
         if (outputFormat != null) {
-            params.withOutputFormat(RecordDumpServiceConnector.Params.OutputFormat.valueOf(outputFormat));
+            params.withOutputFormat(RecordDumpServiceConnector.AgencyParams.OutputFormat.valueOf(outputFormat));
         }
 
         if (outputEncoding != null) {
@@ -90,14 +114,32 @@ public class DumpApp {
             }
         }
 
-        try {
-            dump(params, url, file, dryrun);
-        } catch (RuntimeException ex) {
-            System.out.println("Caught exception - operation aborted");
-        }
+        return params;
     }
 
-    public static void dump(RecordDumpServiceConnector.Params params, String url, File file, boolean dryrun) {
+    private static RecordDumpServiceConnector.RecordParams constructRecordParams(Cli cli) {
+        final String outputFormat = cli.args.get("format");
+        final String outputEncoding = cli.args.get("encoding");
+
+        final RecordDumpServiceConnector.RecordParams params = new RecordDumpServiceConnector.RecordParams();
+
+        if (outputFormat != null) {
+            params.withOutputFormat(RecordDumpServiceConnector.RecordParams.OutputFormat.valueOf(outputFormat));
+        }
+
+        if (outputEncoding != null) {
+            if ("LATIN-1".equalsIgnoreCase(outputEncoding)) {
+                // Small hack as 'LATIN-1' is not accepted by java
+                params.withOutputEncoding("LATIN1");
+            } else {
+                params.withOutputEncoding(outputEncoding);
+            }
+        }
+
+        return params;
+    }
+
+    private static void dump(RecordDumpServiceConnector.AgencyParams params, String url, File file, boolean dryrun) {
         RecordDumpServiceConnector connector = RecordDumpServiceConnectorFactory.create(url);
 
         try {
@@ -137,5 +179,25 @@ public class DumpApp {
         }
     }
 
+    private static void dump(RecordDumpServiceConnector.RecordParams params, String url, File file, String body) {
+        RecordDumpServiceConnector connector = RecordDumpServiceConnectorFactory.create(url);
+
+        try {
+            System.out.println("Exporting records...");
+            InputStream inputStream = connector.dumpRecords(params, body);
+            java.nio.file.Files.copy(
+                    inputStream,
+                    file.toPath(),
+                    StandardCopyOption.REPLACE_EXISTING);
+
+            inputStream.close();
+
+            System.out.println("Done");
+        } catch (RecordDumpServiceConnectorException | IOException ex) {
+            System.out.println("Unexpected error!");
+            System.out.println(ex.getMessage());
+            throw new RuntimeException("Unexpected error");
+        }
+    }
 
 }
