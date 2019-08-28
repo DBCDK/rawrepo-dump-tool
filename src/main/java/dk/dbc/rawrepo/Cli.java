@@ -18,7 +18,8 @@ public class Cli {
     Cli(String[] args) throws CliException {
         final ArgumentParser parser = ArgumentParsers.newArgumentParser("rrdump")
                 .description("Dumps one or more libraries from rawrepo.\n" +
-                        "Support output in multiple formats and encodings.");
+                        "Support output in multiple formats and encodings. \n\n" +
+                        "For more examples see https://github.com/DBCDK/rawrepo-dump-tool");
 
         MutuallyExclusiveGroup group = parser.addMutuallyExclusiveGroup().required(true);
 
@@ -32,7 +33,12 @@ public class Cli {
                 .type(Arguments.fileType())
                 .help("Name of file containing record ids. Format is line separated bibliographicrecordid:agencyid.\n" +
                         "Note and -r and -a are mutually exclusive. Dump tool works in either record mode or agency mode \n" +
-                        "Usage example: -r my_records.lin");
+
+                        "Usage example: -r my_records.txt \n\n" +
+                        "Example of file content: \n" +
+                        "51715098:870970\n" +
+                        "68622840:870979\n" +
+                        "877770486:830380");
 
         parser.addArgument("-f", "--format")
                 .choices(RecordDumpServiceConnector.AgencyParams.OutputFormat.list())

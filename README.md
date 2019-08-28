@@ -3,7 +3,7 @@ Rawrepo dump tool is a command line tool for dumping all records for one or more
 
 ## Installation
 ```bash
-$ curl -sL http://mavenrepo.dbc.dk/content/repositories/releases/dk/dbc/rawrepo-dump-tool/1.0.5/rawrepo-dump-tool-1.0.5.jar -o rrdump.jar && unzip -op rrdump.jar rrdump.sh | bash -s -- --install
+$ curl -sL http://mavenrepo.dbc.dk/content/repositories/releases/dk/dbc/rawrepo-dump-tool/1.0.6/rawrepo-dump-tool-1.0.6.jar -o rrdump.jar && unzip -op rrdump.jar rrdump.sh | bash -s -- --install
 $ source ~/.bashrc # Or log out and into a new session
 ```
 
@@ -17,7 +17,9 @@ rrdump --selfupdate
 usage: rrdump [-h] [-f {LINE,XML,JSON,ISO,LINE_XML}] [-e ENCODING] [-s {ACTIVE,ALL,DELETED}] [-t TYPE [TYPE ...]] [-cf CREATED_FROM] [-ct CREATED_TO] [-mf MODIFIED_FROM] [-mt MODIFIED_TO] -u URL -o FILE [--dryrun [{true,false}]] (-a AGENCY_ID [AGENCY_ID ...] | -r RECORDS)
 
 Dumps one or more libraries from rawrepo.
-Support output in multiple formats and encodings.
+Support output in multiple formats and encodings. 
+
+For more examples see https://github.com/DBCDK/rawrepo-dump-tool
 
 optional arguments:
   -h, --help             show this help message and exit
@@ -28,7 +30,12 @@ optional arguments:
   -r RECORDS, --records RECORDS
                          Name of file containing record ids. Format is line separated bibliographicrecordid:agencyid.
                          Note and -r and -a are mutually exclusive. Dump tool works in either record mode or agency mode 
-                         Usage example: -r my_records.lin
+                         Usage example: -r my_records.txt 
+                         
+                         Example of file content: 
+                         51715098:870970
+                         68622840:870979
+                         877770486:830380
   -f {LINE,XML,JSON,ISO,LINE_XML}, --format {LINE,XML,JSON,ISO,LINE_XML}
                          Output format.
                          Defaults to LINE. 
@@ -78,7 +85,6 @@ optional arguments:
                          Usage example: -o 870970.lin
   --dryrun [{true,false}]
                          Dryrun is used for getting the amount of records that will be exported on a normal run.
-
 ````
 Examples
 - Agencies

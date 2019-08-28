@@ -46,16 +46,15 @@ public class DumpApp {
                 // The argparser ensures one of the arguments will always be present, so we don't need to check further
                 final RecordDumpServiceConnector.RecordParams params = constructRecordParams(cli);
                 final File recordFile = cli.args.get("records");
-                final FileInputStream fstream = new FileInputStream(recordFile);
-                final String body = new BufferedReader(new InputStreamReader(fstream)).lines().collect(Collectors.joining("\n"));
-
-                dump(params, url, outputFile, body);
+                try (final FileInputStream fileInputStream = new FileInputStream(recordFile)) {
+                    final String body = new BufferedReader(new InputStreamReader(fileInputStream)).lines().collect(Collectors.joining("\n"));
+                    dump(params, url, outputFile, body);
+                }
             }
-
         } catch (RuntimeException ex) {
             System.out.println("Caught exception - operation aborted");
-        } catch (FileNotFoundException e) {
-            System.out.println("Could not read file '" + cli.args.getString("records") + "'. Does it exist?");
+        } catch (IOException e) {
+            System.out.println("Error accessing the file '" + cli.args.getString("records") + "'. Does it exist?");
         }
     }
 
