@@ -3,7 +3,7 @@ Rawrepo dump tool is a command line tool for dumping all records for one or more
 
 ## Installation
 ```bash
-$ curl -sL http://mavenrepo.dbc.dk/content/repositories/releases/dk/dbc/rawrepo-dump-tool/1.0.6/rawrepo-dump-tool-1.0.6.jar -o rrdump.jar && unzip -op rrdump.jar rrdump.sh | bash -s -- --install
+$ curl -sL http://mavenrepo.dbc.dk/content/repositories/releases/dk/dbc/rawrepo-dump-tool/1.0.7/rawrepo-dump-tool-1.0.7.jar -o rrdump.jar && unzip -op rrdump.jar rrdump.sh | bash -s -- --install
 $ source ~/.bashrc # Or log out and into a new session
 ```
 
@@ -14,7 +14,7 @@ rrdump --selfupdate
 
 ## Usage
 ````bash
-usage: rrdump [-h] [-f {LINE,XML,JSON,ISO,LINE_XML}] [-e ENCODING] [-s {ACTIVE,ALL,DELETED}] [-t TYPE [TYPE ...]] [-cf CREATED_FROM] [-ct CREATED_TO] [-mf MODIFIED_FROM] [-mt MODIFIED_TO] -u URL -o FILE [--dryrun [{true,false}]] (-a AGENCY_ID [AGENCY_ID ...] | -r RECORDS)
+usage: rrdump [-h] [-m {RAW,MERGED,EXPANDED}] [-f {LINE,XML,JSON,ISO,LINE_XML}] [-e ENCODING] [-s {ACTIVE,ALL,DELETED}] [-t TYPE [TYPE ...]] [-cf CREATED_FROM] [-ct CREATED_TO] [-mf MODIFIED_FROM] [-mt MODIFIED_TO] -u URL -o FILE [--dryrun [{true,false}]] (-a AGENCY_ID [AGENCY_ID ...] | -r RECORDS)
 
 Dumps one or more libraries from rawrepo.
 Support output in multiple formats and encodings. 
@@ -36,6 +36,10 @@ optional arguments:
                          51715098:870970
                          68622840:870979
                          877770486:830380
+  -m {RAW,MERGED,EXPANDED}, --mode {RAW,MERGED,EXPANDED}
+                         Mode of the records. 
+                         Defaults to MERGED. 
+                         Be aware that choosing EXPANDED takes at least 10 times longer than MERGED
   -f {LINE,XML,JSON,ISO,LINE_XML}, --format {LINE,XML,JSON,ISO,LINE_XML}
                          Output format.
                          Defaults to LINE. 

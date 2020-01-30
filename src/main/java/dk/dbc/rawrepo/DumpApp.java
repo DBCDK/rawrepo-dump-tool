@@ -8,7 +8,6 @@ package dk.dbc.rawrepo;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -65,6 +64,7 @@ public class DumpApp {
 
         final String outputFormat = cli.args.get("format");
         final String outputEncoding = cli.args.get("encoding");
+        final String mode = cli.args.get("mode");
 
         final String createdFrom = cli.args.get("created_from");
         final String createdTo = cli.args.get("created_to");
@@ -102,6 +102,10 @@ public class DumpApp {
 
         if (outputFormat != null) {
             params.withOutputFormat(RecordDumpServiceConnector.AgencyParams.OutputFormat.valueOf(outputFormat));
+        }
+
+        if (mode != null) {
+            params.withMode(RecordDumpServiceConnector.AgencyParams.Mode.valueOf(mode));
         }
 
         if (outputEncoding != null) {
