@@ -40,6 +40,13 @@ public class Cli {
                         "68622840:870979\n" +
                         "877770486:830380");
 
+        parser.addArgument("-m", "--mode")
+                .choices(RecordDumpServiceConnector.AgencyParams.Mode.list())
+                .setDefault("MERGED")
+                .help("Mode of the records. \n" +
+                        "Defaults to MERGED. \n" +
+                        "Be aware that choosing EXPANDED takes at least 10 times longer than MERGED");
+
         parser.addArgument("-f", "--format")
                 .choices(RecordDumpServiceConnector.AgencyParams.OutputFormat.list())
                 .setDefault("LINE")
