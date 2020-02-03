@@ -123,6 +123,7 @@ public class DumpApp {
     private static RecordDumpServiceConnector.RecordParams constructRecordParams(Cli cli) {
         final String outputFormat = cli.args.get("format");
         final String outputEncoding = cli.args.get("encoding");
+        final String mode = cli.args.get("mode");
 
         final RecordDumpServiceConnector.RecordParams params = new RecordDumpServiceConnector.RecordParams();
 
@@ -137,6 +138,10 @@ public class DumpApp {
             } else {
                 params.withOutputEncoding(outputEncoding);
             }
+        }
+
+        if (mode != null) {
+            params.withMode(RecordDumpServiceConnector.AgencyParams.Mode.valueOf(mode));
         }
 
         return params;
