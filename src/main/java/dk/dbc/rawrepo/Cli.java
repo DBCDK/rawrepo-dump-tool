@@ -23,17 +23,21 @@ public class Cli {
 
         MutuallyExclusiveGroup group = parser.addMutuallyExclusiveGroup().required(true);
 
+        group.addArgument("--all")
+                .action(Arguments.storeTrue())
+                .help("Indicates every records should be dumped. Caution: Can be very slow \n" +
+                        "Note that --all | -a AGENCY_ID [AGENCY_ID ...] | -r RECORDS are mutually exclusive. Only one method can be chosen");
+
         group.addArgument("-a", "--agencies")
                 .help("List of agencies to dump.\n" +
-                        "Note and -r and -a are mutually exclusive. Dump tool works in either record mode or agency mode \n" +
+                        "Note that --all | -a AGENCY_ID [AGENCY_ID ...] | -r RECORDS are mutually exclusive. Only one method can be chosen \n" +
                         "Usage example: -a 870970 870971 870979")
                 .nargs("+").metavar("AGENCY_ID");
 
         group.addArgument("-r", "--records")
                 .type(Arguments.fileType())
                 .help("Name of file containing record ids. Format is line separated bibliographicrecordid:agencyid.\n" +
-                        "Note and -r and -a are mutually exclusive. Dump tool works in either record mode or agency mode \n" +
-
+                        "Note that --all | -a AGENCY_ID [AGENCY_ID ...] | -r RECORDS are mutually exclusive. Only one method can be chosen \n" +
                         "Usage example: -r my_records.txt \n\n" +
                         "Example of file content: \n" +
                         "51715098:870970\n" +
@@ -117,9 +121,7 @@ public class Cli {
                         "Usage example: -o 870970.lin");
 
         parser.addArgument("--dryrun")
-                .type(Boolean.class)
-                .nargs("?")
-                .setConst(true)
+                .action(Arguments.storeTrue())
                 .help("Dryrun is used for getting the amount of records that will be exported on a normal run.");
 
         try {

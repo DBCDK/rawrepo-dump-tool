@@ -8,7 +8,7 @@
     <groupId>dk.dbc</groupId>
     <artifactId>rawrepo-dump-tool</artifactId>
     <packaging>jar</packaging>
-    <version>1.0.7</version>
+    <version>1.0.8</version>
     <name>rawrepo-dump-tool</name>
     <url>https://github.com/DBCDK/rawrepo-dump-tool/</url>
 
@@ -66,7 +66,7 @@
         <dependency>
             <groupId>dk.dbc</groupId>
             <artifactId>rawrepo-record-service-connector</artifactId>
-            <version>1.5-SNAPSHOT</version>
+            <version>1.6-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>javax</groupId>

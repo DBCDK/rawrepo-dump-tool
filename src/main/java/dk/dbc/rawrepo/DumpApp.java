@@ -5,6 +5,8 @@
 
 package dk.dbc.rawrepo;
 
+import org.apache.commons.lang3.ArrayUtils;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -12,6 +14,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.file.StandardCopyOption;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -35,12 +38,17 @@ public class DumpApp {
         try {
             final File outputFile = cli.args.get("file");
             final String url = cli.args.get("url");
+            final boolean dryRun = cli.args.get("dryrun");
 
-            if (cli.args.getList("agencies") != null) {
-                final RecordDumpServiceConnector.AgencyParams params = constructAgencyParams(cli);
-                final boolean dryrun = cli.args.get("dryrun") != null ? cli.args.get("dryrun") : false;
+            if (cli.args.getBoolean("all")) {
+                final List<Integer> allAgencies = getAllAgencies(url);
+                final RecordDumpServiceConnector.AgencyParams params = constructAgencyParams(cli, allAgencies);
 
-                dump(params, url, outputFile, dryrun);
+                dump(params, url, outputFile, dryRun);
+            } else if (cli.args.getList("agencies") != null) {
+                final RecordDumpServiceConnector.AgencyParams params = constructAgencyParams(cli, null);
+
+                dump(params, url, outputFile, dryRun);
             } else {
                 // The argparser ensures one of the arguments will always be present, so we don't need to check further
                 final RecordDumpServiceConnector.RecordParams params = constructRecordParams(cli);
@@ -57,7 +65,26 @@ public class DumpApp {
         }
     }
 
-    private static RecordDumpServiceConnector.AgencyParams constructAgencyParams(Cli cli) {
+    private static List<Integer> getAllAgencies(String url) {
+        final RecordAgencyServiceConnector connector = RecordAgencyServiceConnectorFactory.create(url);
+
+        try {
+            final Integer[] allAgencies = connector.getAllAgencies();
+            // Convert to list and remove 191919 as 191919 can not be combined with other agencies
+            final List<Integer> allAgenciesAsList = Arrays.asList(ArrayUtils.removeElement(allAgencies, 191919));
+
+            final String s = allAgenciesAsList.toString();
+            System.out.println("Dumping agencies: " + s.substring(1, s.length() - 1));
+
+            return allAgenciesAsList;
+        } catch (RecordAgencyServiceConnectorException e) {
+            System.out.println("Unexpected error!");
+            System.out.println(e.getMessage());
+            throw new RuntimeException("Failed to get agencies");
+        }
+    }
+
+    private static RecordDumpServiceConnector.AgencyParams constructAgencyParams(Cli cli, List<Integer> allAgencies) {
         final List<Integer> agencies = cli.args.getList("agencies");
         final String recordStatus = cli.args.get("status");
         final List<String> recordTypes = cli.args.get("type");
@@ -71,8 +98,13 @@ public class DumpApp {
         final String modifiedFrom = cli.args.get("modified_from");
         final String modifiedTo = cli.args.get("modified_to");
 
-        final RecordDumpServiceConnector.AgencyParams params = new RecordDumpServiceConnector.AgencyParams()
-                .withAgencies(agencies);
+        final RecordDumpServiceConnector.AgencyParams params = new RecordDumpServiceConnector.AgencyParams();
+
+        if (allAgencies == null) {
+            params.withAgencies(agencies);
+        } else {
+            params.withAgencies(allAgencies);
+        }
 
         if (!recordStatus.isEmpty()) {
             params.withRecordStatus(RecordDumpServiceConnector.AgencyParams.RecordStatus.valueOf(recordStatus));
