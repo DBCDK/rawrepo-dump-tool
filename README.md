@@ -14,7 +14,7 @@ rrdump --selfupdate
 
 ## Usage
 ````bash
-usage: rrdump [-h] [-m {RAW,MERGED,EXPANDED}] [-f {LINE,XML,JSON,ISO,LINE_XML}] [-e ENCODING] [-s {ACTIVE,ALL,DELETED}] [-t TYPE [TYPE ...]] [-cf CREATED_FROM] [-ct CREATED_TO] [-mf MODIFIED_FROM] [-mt MODIFIED_TO] -u URL -o FILE [--dryrun [{true,false}]] (-a AGENCY_ID [AGENCY_ID ...] | -r RECORDS)
+usage: rrdump [-h] [-m {RAW,MERGED,EXPANDED}] [-f {LINE,XML,JSON,ISO,LINE_XML}] [-e ENCODING] [-s {ACTIVE,ALL,DELETED}] [-t TYPE [TYPE ...]] [-cf CREATED_FROM] [-ct CREATED_TO] [-mf MODIFIED_FROM] [-mt MODIFIED_TO] -u URL -o FILE [--dryrun] (--all | -a AGENCY_ID [AGENCY_ID ...] | -r RECORDS)
 
 Dumps one or more libraries from rawrepo.
 Support output in multiple formats and encodings. 
@@ -23,13 +23,15 @@ For more examples see https://github.com/DBCDK/rawrepo-dump-tool
 
 optional arguments:
   -h, --help             show this help message and exit
+  --all                  Indicates every records should be dumped. Caution: Can be very slow 
+                         Note that --all | -a AGENCY_ID [AGENCY_ID ...] | -r RECORDS are mutually exclusive. Only one method can be chosen
   -a AGENCY_ID [AGENCY_ID ...], --agencies AGENCY_ID [AGENCY_ID ...]
                          List of agencies to dump.
-                         Note and -r and -a are mutually exclusive. Dump tool works in either record mode or agency mode 
+                         Note that --all | -a AGENCY_ID [AGENCY_ID ...] | -r RECORDS are mutually exclusive. Only one method can be chosen 
                          Usage example: -a 870970 870971 870979
   -r RECORDS, --records RECORDS
                          Name of file containing record ids. Format is line separated bibliographicrecordid:agencyid.
-                         Note and -r and -a are mutually exclusive. Dump tool works in either record mode or agency mode 
+                         Note that --all | -a AGENCY_ID [AGENCY_ID ...] | -r RECORDS are mutually exclusive. Only one method can be chosen 
                          Usage example: -r my_records.txt 
                          
                          Example of file content: 
@@ -87,10 +89,13 @@ optional arguments:
                          Usage example: -u http://rawrepo-record-service.fbstest.svc.cloud.dbc.dk
   -o FILE, --file FILE   The name which the dump should be written to 
                          Usage example: -o 870970.lin
-  --dryrun [{true,false}]
-                         Dryrun is used for getting the amount of records that will be exported on a normal run.
+  --dryrun               Dryrun is used for getting the amount of records that will be exported on a normal run.
 ````
 Examples
+- All
+```bash
+rrdump --all -t LOCAL ENRICHMENT -u http://rawrepo-record-service.fbstest.svc.cloud.dbc.dk -o fbstest-all.txt
+```
 - Agencies
 ```bash
 rrdump -a 710100 -e UTF-8 -f LINE -t HOLDINGS -u http://rawrepo-record-service.fbstest.svc.cloud.dbc.dk -o 710100_holdings.lin
