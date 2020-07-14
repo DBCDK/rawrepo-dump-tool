@@ -94,7 +94,7 @@ optional arguments:
 Examples
 - All
 ```bash
-rrdump -all -t LOCAL ENRICHMENT -u http://rawrepo-record-service.fbstest.svc.cloud.dbc.dk -o fbstest-all.txt
+rrdump --all -t LOCAL ENRICHMENT -u http://rawrepo-record-service.fbstest.svc.cloud.dbc.dk -o fbstest-all.txt
 ```
 - Agencies
 ```bash
