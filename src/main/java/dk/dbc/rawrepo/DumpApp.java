@@ -69,12 +69,13 @@ public class DumpApp {
         final RecordAgencyServiceConnector connector = RecordAgencyServiceConnectorFactory.create(url);
 
         try {
+            System.out.println("Getting list of agencies...");
             final Integer[] allAgencies = connector.getAllAgencies();
             // Convert to list and remove 191919 as 191919 can not be combined with other agencies
             final List<Integer> allAgenciesAsList = Arrays.asList(ArrayUtils.removeElement(allAgencies, 191919));
 
             final String s = allAgenciesAsList.toString();
-            System.out.println("Dumping agencies: " + s.substring(1, s.length() - 1));
+            System.out.println("Found the following agencies: " + s.substring(1, s.length() - 1));
 
             return allAgenciesAsList;
         } catch (RecordAgencyServiceConnectorException e) {
