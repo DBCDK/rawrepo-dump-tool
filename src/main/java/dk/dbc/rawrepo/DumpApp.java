@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.file.StandardCopyOption;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -180,19 +181,52 @@ public class DumpApp {
         return params;
     }
 
+    private static void getRecordsCountForAgencies(RecordDumpServiceConnector.AgencyParams params, String url) throws RecordDumpServiceConnectorException {
+        final RecordDumpServiceConnector connector = RecordDumpServiceConnectorFactory.create(url);
+
+        System.out.println("Getting record count...");
+
+        try {
+            final InputStream inputStream = connector.dumpAgenciesDryRun(params);
+            final String result = new BufferedReader(new InputStreamReader(inputStream))
+                    .lines().collect(Collectors.joining("\n"));
+            System.out.println(result);
+        } catch (RecordDumpServiceConnectorUnexpectedStatusCodeValidationException e) {
+            System.out.println("First attempt to get record count failed");
+            final List<Integer> correctedAgencies = new ArrayList<>(params.getAgencies().get());
+
+            for (ParamsValidationItem paramsValidationItem : e.getParamsValidation().getErrors()) {
+                if ("agencies".equals(paramsValidationItem.getFieldName()) && paramsValidationItem.getMessage().contains("could not be validated by OpenAgency")) {
+                    final int start = 7;
+                    final int end = paramsValidationItem.getMessage().indexOf(" ", start);
+                    final String agencyToIgnore = paramsValidationItem.getMessage().substring(start, end);
+                    System.out.println("Agency ignored because of failed openagency validation: '" + agencyToIgnore + "'");
+                    // This is a bit weird way to remove an element. The problem is that remove(int) removes the element
+                    // at that position. To remove a specific object we have to call remove(object) and therefor the int
+                    // has to be converted to an Integer object first.
+                    correctedAgencies.remove(new Integer(Integer.parseInt(agencyToIgnore)));
+                } else {
+                    throw e;
+                }
+            }
+            System.out.println("Getting record count again with ignored agencies...");
+            params.withAgencies(correctedAgencies);
+            final InputStream inputStream = connector.dumpAgenciesDryRun(params);
+            final String result = new BufferedReader(new InputStreamReader(inputStream))
+                    .lines().collect(Collectors.joining("\n"));
+            System.out.println(result);
+        }
+    }
+
     private static void dump(RecordDumpServiceConnector.AgencyParams params, String url, File file, boolean dryrun) {
         RecordDumpServiceConnector connector = RecordDumpServiceConnectorFactory.create(url);
 
         try {
-            System.out.println("Getting record count...");
-            InputStream inputStream = connector.dumpAgenciesDryRun(params);
-            String result = new BufferedReader(new InputStreamReader(inputStream))
-                    .lines().collect(Collectors.joining("\n"));
-            System.out.println(result);
+            getRecordsCountForAgencies(params, url);
 
             if (!dryrun) {
                 System.out.println("Exporting records...");
-                inputStream = connector.dumpAgencies(params);
+                final InputStream inputStream = connector.dumpAgencies(params);
                 java.nio.file.Files.copy(
                         inputStream,
                         file.toPath(),
