@@ -4,6 +4,8 @@
 # See license text in LICENSE.md
 #
 
+JDK_HOME="${JDK_HOME:-/usr/lib/jvm/zulu-8-amd64}"
+JAVA="${JDK_HOME}/bin/java"
 rrdump_home="$HOME/.rrdump"
 rrdump_archive="${rrdump_home}/archive"
 rrdump_bin="${rrdump_home}/bin"
@@ -47,18 +49,6 @@ function install {
         echo " Please install unzip on your system using your favourite package manager."
         echo ""
         echo " Restart after installing unzip."
-        echo "======================================================================================================"
-        echo ""
-        exit 1
-    fi
-
-    if [ -z $(which java) ]; then
-        echo "java not found."
-        echo ""
-        echo "======================================================================================================"
-        echo " Please install java on your system using your favourite package manager."
-        echo ""
-        echo " Restart after installing java."
         echo "======================================================================================================"
         echo ""
         exit 1
@@ -124,12 +114,12 @@ case "$1" in
     -h)
     echo "usage: rrdump --version"
     echo "usage: rrdump --selfupdate"
-    java -jar ${rrdump_archive}/rrdump-current.jar -h
+    ${JAVA} -jar ${rrdump_archive}/rrdump-current.jar -h
     ;;
     --selfupdate)
     selfupdate
     ;;
     *)
-    java -jar ${rrdump_archive}/rrdump-current.jar "$@"
+    ${JAVA} -jar ${rrdump_archive}/rrdump-current.jar "$@"
     ;;
 esac
