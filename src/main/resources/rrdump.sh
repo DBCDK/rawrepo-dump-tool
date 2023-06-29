@@ -5,7 +5,7 @@
 #
 
 JDK_HOME="${JDK_HOME:-/usr/lib/jvm/zulu-8-amd64}"
-JAVA="${JDK_HOME}/bin/java"
+export PATH="${JDK_HOME}/bin:${PATH}"
 rrdump_home="$HOME/.rrdump"
 rrdump_archive="${rrdump_home}/archive"
 rrdump_bin="${rrdump_home}/bin"
@@ -114,12 +114,12 @@ case "$1" in
     -h)
     echo "usage: rrdump --version"
     echo "usage: rrdump --selfupdate"
-    ${JAVA} -jar ${rrdump_archive}/rrdump-current.jar -h
+    java -jar ${rrdump_archive}/rrdump-current.jar -h
     ;;
     --selfupdate)
     selfupdate
     ;;
     *)
-    ${JAVA} -jar ${rrdump_archive}/rrdump-current.jar "$@"
+    java -jar ${rrdump_archive}/rrdump-current.jar "$@"
     ;;
 esac
