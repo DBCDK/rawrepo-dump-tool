@@ -27,7 +27,7 @@ pipeline {
 
         stage("deploy to maven repository") {
             when {
-                branch "main"
+                branch "master"
             }
             steps {
                 sh "mvn deploy -Dmaven.test.skip=true"
