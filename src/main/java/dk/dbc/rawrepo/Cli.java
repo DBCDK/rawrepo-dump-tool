@@ -1,10 +1,6 @@
-/*
- * Copyright Dansk Bibliotekscenter a/s. Licensed under GPLv3
- * See license text in LICENSE.md
- */
-
 package dk.dbc.rawrepo;
 
+import dk.dbc.rawrepo.dump.RecordDumpServiceConnector;
 import net.sourceforge.argparse4j.ArgumentParsers;
 import net.sourceforge.argparse4j.impl.Arguments;
 import net.sourceforge.argparse4j.inf.ArgumentParser;

@@ -1,11 +1,13 @@
-/*
- * Copyright Dansk Bibliotekscenter a/s. Licensed under GPLv3
- * See license text in LICENSE.md
- */
-
 package dk.dbc.rawrepo;
 
-import org.apache.commons.lang3.ArrayUtils;
+import dk.dbc.rawrepo.agency.RecordAgencyServiceConnector;
+import dk.dbc.rawrepo.agency.RecordAgencyServiceConnectorException;
+import dk.dbc.rawrepo.agency.RecordAgencyServiceConnectorFactory;
+import dk.dbc.rawrepo.dto.ParamsValidationItemDTO;
+import dk.dbc.rawrepo.dump.RecordDumpServiceConnector;
+import dk.dbc.rawrepo.dump.RecordDumpServiceConnectorException;
+import dk.dbc.rawrepo.dump.RecordDumpServiceConnectorFactory;
+import dk.dbc.rawrepo.dump.RecordDumpServiceConnectorUnexpectedStatusCodeValidationException;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -73,7 +75,7 @@ public class DumpApp {
             System.out.println("Getting list of agencies...");
             final Integer[] allAgencies = connector.getAllAgencies();
             // Convert to list and remove 191919 as 191919 can not be combined with other agencies
-            final List<Integer> allAgenciesAsList = Arrays.asList(ArrayUtils.removeElement(allAgencies, 191919));
+            final List<Integer> allAgenciesAsList = Arrays.stream(allAgencies).filter(i -> i != 191919).collect(Collectors.toList());
 
             final String s = allAgenciesAsList.toString();
             System.out.println("Found the following agencies: " + s.substring(1, s.length() - 1));
@@ -195,7 +197,7 @@ public class DumpApp {
             System.out.println("First attempt to get record count failed");
             final List<Integer> correctedAgencies = new ArrayList<>(params.getAgencies().get());
 
-            for (ParamsValidationItem paramsValidationItem : e.getParamsValidation().getErrors()) {
+            for (ParamsValidationItemDTO paramsValidationItem : e.getParamsValidation().getErrors()) {
                 if ("agencies".equals(paramsValidationItem.getFieldName()) && paramsValidationItem.getMessage().contains("could not be validated by OpenAgency")) {
                     final int start = 7;
                     final int end = paramsValidationItem.getMessage().indexOf(" ", start);
@@ -238,7 +240,7 @@ public class DumpApp {
             System.out.println("Done");
         } catch (RecordDumpServiceConnectorUnexpectedStatusCodeValidationException ex) {
             System.out.println("Validation error!");
-            for (ParamsValidationItem paramsValidationItem : ex.getParamsValidation().getErrors()) {
+            for (ParamsValidationItemDTO paramsValidationItem : ex.getParamsValidation().getErrors()) {
                 System.out.println(String.format("Field %s: %s", paramsValidationItem.getFieldName(), paramsValidationItem.getMessage()));
                 if ("recordType".equals(paramsValidationItem.getFieldName()) && paramsValidationItem.getMessage().contains("The field is required")) {
                     // Add extra help text if the field is recordType

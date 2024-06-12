@@ -4,8 +4,6 @@
 # See license text in LICENSE.md
 #
 
-JDK_HOME="${JDK_HOME:-/usr/lib/jvm/zulu-8-amd64}"
-export PATH="${JDK_HOME}/bin:${PATH}"
 rrdump_home="$HOME/.rrdump"
 rrdump_archive="${rrdump_home}/archive"
 rrdump_bin="${rrdump_home}/bin"
