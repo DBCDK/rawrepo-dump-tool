@@ -63,6 +63,7 @@ public class DumpApp {
             }
         } catch (RuntimeException ex) {
             System.out.println("Caught exception - operation aborted");
+            System.out.println(ex.getMessage());
         } catch (IOException e) {
             System.out.println("Error accessing the file '" + cli.args.getString("records") + "'. Does it exist?");
         }
